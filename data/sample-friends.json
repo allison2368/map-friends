@@ -1,0 +1,205 @@
+[
+  {
+    "id": "maya-chen",
+    "name": "Maya Chen",
+    "location": "San Francisco, CA",
+    "lat": 37.7749,
+    "lng": -122.4194,
+    "photos": [
+      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&h=700&fit=crop"
+    ],
+    "answers": [
+      {
+        "question": "What are you up to these days?",
+        "answer": "Designing maps by day and hunting for the city's best bakery by weekend."
+      },
+      {
+        "question": "Favorite local spot?",
+        "answer": "Sunset walks at Lands End."
+      },
+      {
+        "question": "One thing you want friends to know?",
+        "answer": "Come visit — I always have an extra mug out."
+      }
+    ]
+  },
+  {
+    "id": "jordan-ellis",
+    "name": "Jordan Ellis",
+    "location": "Austin, TX",
+    "lat": 30.2672,
+    "lng": -97.7431,
+    "photos": [
+      "https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1519332978332-21b7d621d05e?w=900&h=700&fit=crop"
+    ],
+    "answers": [
+      {
+        "question": "What are you up to these days?",
+        "answer": "Playing in a backyard band and teaching myself to garden tomatoes."
+      },
+      {
+        "question": "Favorite local spot?",
+        "answer": "Barton Springs on a hot afternoon."
+      },
+      {
+        "question": "One thing you want friends to know?",
+        "answer": "If you're driving through, text me. I will make tacos."
+      }
+    ]
+  },
+  {
+    "id": "priya-nair",
+    "name": "Priya Nair",
+    "location": "Chicago, IL",
+    "lat": 41.8781,
+    "lng": -87.6298,
+    "photos": [
+      "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&h=700&fit=crop"
+    ],
+    "answers": [
+      {
+        "question": "What are you up to these days?",
+        "answer": "In grad school, and still very loyal to deep-dish."
+      },
+      {
+        "question": "Favorite local spot?",
+        "answer": "The lakefront path at golden hour."
+      },
+      {
+        "question": "One thing you want friends to know?",
+        "answer": "I have a guest towel with your name on it (metaphorically)."
+      }
+    ]
+  },
+  {
+    "id": "sam-okonkwo",
+    "name": "Sam Okonkwo",
+    "location": "Brooklyn, NY",
+    "lat": 40.6782,
+    "lng": -73.9442,
+    "photos": [
+      "https://images.unsplash.com/photo-1468436139062-f60a71c5c892?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=900&h=700&fit=crop"
+    ],
+    "answers": [
+      {
+        "question": "What are you up to these days?",
+        "answer": "Writing, subway-sketching, and hosting tiny dinner parties."
+      },
+      {
+        "question": "Favorite local spot?",
+        "answer": "Prospect Park meadow on a blanket."
+      },
+      {
+        "question": "One thing you want friends to know?",
+        "answer": "There's always a spare metrocard and a spare pillow."
+      }
+    ]
+  },
+  {
+    "id": "elena-rossi",
+    "name": "Elena Rossi",
+    "location": "Seattle, WA",
+    "lat": 47.6062,
+    "lng": -122.3321,
+    "photos": [
+      "https://images.unsplash.com/photo-1502175353174-a7a70e73b362?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1527489377706-5bf97e608852?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1433477155339-28b5ba7267e4?w=900&h=700&fit=crop"
+    ],
+    "answers": [
+      {
+        "question": "What are you up to these days?",
+        "answer": "Hiking whenever the clouds lift, and roasting way too much coffee."
+      },
+      {
+        "question": "Favorite local spot?",
+        "answer": "Ferry rides across the sound."
+      },
+      {
+        "question": "One thing you want friends to know?",
+        "answer": "Bring a rain jacket. I'll bring the thermos."
+      }
+    ]
+  },
+  {
+    "id": "noah-patel",
+    "name": "Noah Patel",
+    "location": "Denver, CO",
+    "lat": 39.7392,
+    "lng": -104.9903,
+    "photos": [
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1482192505345-5655af888cc4?w=900&h=700&fit=crop"
+    ],
+    "answers": [
+      {
+        "question": "What are you up to these days?",
+        "answer": "Trying every trail within two hours of the city."
+      },
+      {
+        "question": "Favorite local spot?",
+        "answer": "Sunrise at Red Rocks."
+      },
+      {
+        "question": "One thing you want friends to know?",
+        "answer": "If you can handle the altitude, I will take you somewhere beautiful."
+      }
+    ]
+  },
+  {
+    "id": "lina-park",
+    "name": "Lina Park",
+    "location": "Atlanta, GA",
+    "lat": 33.749,
+    "lng": -84.388,
+    "photos": [
+      "https://images.unsplash.com/photo-1575917649705-5b59aaa12e6b?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=900&h=700&fit=crop"
+    ],
+    "answers": [
+      {
+        "question": "What are you up to these days?",
+        "answer": "Starting a ceramics habit and collecting playlists for long drives."
+      },
+      {
+        "question": "Favorite local spot?",
+        "answer": "Piedmont Park after a storm, when everything smells like pine."
+      },
+      {
+        "question": "One thing you want friends to know?",
+        "answer": "Call before you land — I'll pick you up with snacks."
+      }
+    ]
+  },
+  {
+    "id": "owen-brooks",
+    "name": "Owen Brooks",
+    "location": "Portland, OR",
+    "lat": 45.5152,
+    "lng": -122.6784,
+    "photos": [
+      "https://images.unsplash.com/photo-1448375240581-4361c0a0f8e6?w=900&h=700&fit=crop",
+      "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=900&h=700&fit=crop"
+    ],
+    "answers": [
+      {
+        "question": "What are you up to these days?",
+        "answer": "Working at a bookstore and biking everywhere, even in the drizzle."
+      },
+      {
+        "question": "Favorite local spot?",
+        "answer": "Powell Butte on a clear morning."
+      },
+      {
+        "question": "One thing you want friends to know?",
+        "answer": "I will always share my umbrella and my recs."
+      }
+    ]
+  }
+]
