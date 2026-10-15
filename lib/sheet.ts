@@ -18,6 +18,53 @@ function looksLike(header: string, needles: string[]): boolean {
   return needles.some((needle) => header.includes(needle));
 }
 
+function isNameHeader(header: string): boolean {
+  return (
+    header === "name" ||
+    header.startsWith("name (") ||
+    header === "full name" ||
+    header === "your name" ||
+    header.startsWith("what is your name") ||
+    header === "first name" ||
+    header === "firstname" ||
+    header === "last name" ||
+    header === "lastname"
+  );
+}
+
+function isPhotoHeader(header: string): boolean {
+  return (
+    /\b(photos?|pictures?)\b/.test(header) ||
+    header.includes("file upload") ||
+    header === "upload" ||
+    header.startsWith("upload ")
+  );
+}
+
+function usablePlace(value: string): boolean {
+  return !/^(home|here|n\/a|na|none|unknown)$/i.test(value.trim());
+}
+
+function locationCandidates(raw: string): string[] {
+  const stripped = raw
+    .replace(/[!:;)]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const candidates: string[] = [];
+  const beforeIn = stripped.split(/\s+in\s+/i)[0]?.trim();
+  if (beforeIn && /^\d+\s+/.test(beforeIn) && beforeIn !== stripped) {
+    candidates.push(beforeIn);
+  }
+  const afterDash = stripped.split(" - ").at(-1)?.trim();
+  if (afterDash && afterDash.length > 2 && afterDash !== stripped) {
+    candidates.push(afterDash);
+  }
+  const inMatch = stripped.match(/\bin\s+([A-Za-z][A-Za-z .]{1,40})$/i);
+  if (inMatch?.[1]) candidates.push(inMatch[1].trim());
+  candidates.push(stripped);
+  return [...new Set(candidates.filter(usablePlace))];
+}
+
 function slugify(value: string): string {
   return value
     .toLowerCase()
@@ -48,13 +95,8 @@ export async function friendsFromCsv(csv: string): Promise<Friend[]> {
     const firstName = get((h) => h === "first name" || h === "firstname");
     const lastName = get((h) => h === "last name" || h === "lastname");
     const fullName =
-      get(
-        (h) =>
-          h === "name" ||
-          h === "full name" ||
-          h === "your name" ||
-          h.startsWith("what is your name"),
-      ) || [firstName, lastName].filter(Boolean).join(" ");
+      get((h) => isNameHeader(h) && h !== "first name" && h !== "firstname" && h !== "last name" && h !== "lastname") ||
+      [firstName, lastName].filter(Boolean).join(" ");
 
     if (!fullName) continue;
 
@@ -81,29 +123,29 @@ export async function friendsFromCsv(csv: string): Promise<Friend[]> {
     let lng = lngFromSheet;
 
     if ((lat == null || lng == null) && location) {
-      const coords = await geocodeLocation(location);
-      lat = coords?.lat ?? null;
-      lng = coords?.lng ?? null;
+      for (const candidate of locationCandidates(location)) {
+        const coords = await geocodeLocation(candidate);
+        if (!coords) continue;
+        lat = coords.lat;
+        lng = coords.lng;
+        break;
+      }
     }
 
     if (lat == null || lng == null) continue;
 
     const photos = headers.flatMap((header, index) => {
-      if (!looksLike(header, ["photo", "picture", "image", "upload", "file"])) {
-        return [];
-      }
-      return splitPhotoCell(cells[index] ?? "");
+      if (!isPhotoHeader(header)) return [];
+      return splitPhotoCell(cells[index] ?? "").filter((url) =>
+        /^https?:\/\//i.test(url),
+      );
     });
 
     const answers: FriendAnswer[] = [];
     headers.forEach((header, index) => {
       if (
         SKIP_HEADERS.includes(header) ||
-        header === "name" ||
-        header === "full name" ||
-        header === "your name" ||
-        header === "first name" ||
-        header === "last name" ||
+        isNameHeader(header) ||
         header === "lat" ||
         header === "latitude" ||
         header === "lng" ||
@@ -117,11 +159,8 @@ export async function friendsFromCsv(csv: string): Promise<Friend[]> {
           "hometown",
           "where do you live",
           "where are you",
-          "photo",
-          "picture",
-          "image",
-          "upload",
-        ])
+        ]) ||
+        isPhotoHeader(header)
       ) {
         return;
       }
@@ -145,5 +184,25 @@ export async function friendsFromCsv(csv: string): Promise<Friend[]> {
     });
   }
 
-  return friends;
+  return mergeSamePerson(friends);
+}
+
+function mergeSamePerson(friends: Friend[]): Friend[] {
+  const merged: Friend[] = [];
+  for (const friend of friends) {
+    const existing = merged.find(
+      (item) => item.name.trim().toLowerCase() === friend.name.trim().toLowerCase(),
+    );
+    if (!existing) {
+      merged.push({ ...friend, photos: [...friend.photos] });
+      continue;
+    }
+    const seen = new Set(existing.photos);
+    for (const photo of friend.photos) {
+      if (seen.has(photo)) continue;
+      existing.photos.push(photo);
+      seen.add(photo);
+    }
+  }
+  return merged;
 }

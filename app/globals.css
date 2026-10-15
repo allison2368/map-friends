@@ -151,13 +151,13 @@ body {
 
 .friend-popup {
   position: relative;
-  width: min(460px, 100%);
+  width: min(560px, 100%);
   max-height: min(86dvh, 760px);
   overflow: auto;
   padding: 28px 26px 24px;
   color: var(--ink);
   background-color: #faf6ec;
-  background-image: url("/tree-pattern.svg");
+  background-image: url("/tree-pattern.svg?v=2");
   background-size: 240px 240px;
   background-repeat: repeat;
   border: 1px solid rgba(91, 70, 54, 0.25);
@@ -241,6 +241,13 @@ body {
 
 .carousel-nav.next {
   right: 8px;
+}
+
+.carousel-count {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
 }
 
 .carousel-dots {

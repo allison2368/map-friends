@@ -47,6 +47,11 @@ export function PhotoCarousel({ name, photos }: PhotoCarouselProps) {
         ) : null}
       </div>
       {photos.length > 1 ? (
+        <p className="carousel-count">
+          {index + 1} / {photos.length}
+        </p>
+      ) : null}
+      {photos.length > 1 ? (
         <div className="carousel-dots" role="tablist" aria-label="Photos">
           {photos.map((photo, photoIndex) => (
             <button
