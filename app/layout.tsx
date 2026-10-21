@@ -9,7 +9,7 @@ const typewriter = Special_Elite({
 });
 
 export const metadata: Metadata = {
-  title: "title",
+  title: "forest!",
   description: "An interactive map of our friends, drawn from a Google Form.",
 };
 

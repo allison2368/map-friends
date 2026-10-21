@@ -50,11 +50,9 @@ body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
-  padding: 12px 36px;
-  background: var(--glass);
-  border: 1px solid rgba(91, 70, 54, 0.18);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 10px 30px rgba(43, 36, 28, 0.08);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .title-overlay h1 {
@@ -63,22 +61,6 @@ body {
   letter-spacing: 0.18em;
   text-transform: lowercase;
   font-weight: 400;
-}
-
-.map-status {
-  position: absolute;
-  top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  text-align: center;
-  margin: 0;
-  max-width: min(420px, 70vw);
-  padding: 8px 12px;
-  background: rgba(255, 252, 245, 0.72);
-  border: 1px solid rgba(91, 70, 54, 0.12);
-  font-size: 12px;
-  line-height: 1.4;
 }
 
 .form-link {
@@ -100,8 +82,8 @@ body {
 .friend-pin.leaflet-div-icon {
   background: transparent;
   border: 0;
-  width: auto !important;
-  height: auto !important;
+  width: 22px !important;
+  height: 22px !important;
 }
 
 .leaflet-tile-pane {
@@ -109,28 +91,34 @@ body {
 }
 
 .pin-hit {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 22px;
   cursor: pointer;
   font-family: inherit;
   color: inherit;
 }
 
-.pin-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  border: 2px solid #fffaf3;
-  box-shadow: 0 2px 8px rgba(43, 36, 28, 0.35);
+.pin-tree {
+  display: block;
+  width: 22px;
+  height: 22px;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-size: 18px;
+  line-height: 22px;
+  text-align: center;
 }
 
 .pin-name {
-  padding: 4px 8px;
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  transform: translateX(-50%);
+  padding: 3px 6px;
   background: rgba(255, 252, 245, 0.92);
   border: 1px solid rgba(91, 70, 54, 0.2);
-  font-size: 13px;
+  font-size: 12px;
   white-space: nowrap;
   box-shadow: 0 4px 10px rgba(43, 36, 28, 0.12);
 }
@@ -209,6 +197,11 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+}
+
+.carousel-frame img.portrait {
+  object-fit: contain;
 }
 
 .carousel-empty {

@@ -1,4 +1,5 @@
 import sampleFriends from "@/data/sample-friends.json";
+import { applyDrivePhotos, listDriveFolder } from "./drive";
 import { friendsFromCsv } from "./sheet";
 import type { Friend, FriendsResponse } from "./types";
 
@@ -15,7 +16,16 @@ export async function loadFriends(): Promise<FriendsResponse> {
       const response = await fetch(sheetUrl, { cache: "no-store" });
       if (response.ok) {
         const csv = await response.text();
-        const friends = await friendsFromCsv(csv);
+        let friends = await friendsFromCsv(csv);
+        const folderUrl = process.env.GOOGLE_DRIVE_FOLDER_URL;
+        if (folderUrl) {
+          try {
+            const files = await listDriveFolder(folderUrl);
+            if (files.length > 0) friends = applyDrivePhotos(friends, files);
+          } catch {
+            // Keep the sheet photos when the folder cannot be read.
+          }
+        }
         if (friends.length > 0) {
           return { friends, formUrl, source: "google-sheet" };
         }

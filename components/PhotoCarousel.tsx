@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type PhotoCarouselProps = {
   name: string;
@@ -9,11 +9,24 @@ type PhotoCarouselProps = {
 
 export function PhotoCarousel({ name, photos }: PhotoCarouselProps) {
   const [index, setIndex] = useState(0);
+  const [portrait, setPortrait] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [photos]);
+
+  useEffect(() => {
+    setPortrait(false);
+    setFailed(false);
+    for (const src of photos) {
+      const img = new Image();
+      img.src = src;
+    }
+  }, [photos, index]);
 
   if (photos.length === 0) {
-    return (
-      <div className="carousel-empty">No pictures uploaded yet.</div>
-    );
+    return <div className="carousel-empty">No pictures uploaded yet.</div>;
   }
 
   const go = (direction: -1 | 1) => {
@@ -23,8 +36,21 @@ export function PhotoCarousel({ name, photos }: PhotoCarouselProps) {
   return (
     <div className="carousel">
       <div className="carousel-frame">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={photos[index]} alt={`${name} photo ${index + 1}`} />
+        {failed ? (
+          <div className="carousel-empty">This picture could not be loaded.</div>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={photos[index]}
+            alt={`${name} photo ${index + 1}`}
+            className={portrait ? "portrait" : undefined}
+            onLoad={(event) => {
+              const img = event.currentTarget;
+              setPortrait(img.naturalHeight > img.naturalWidth);
+            }}
+            onError={() => setFailed(true)}
+          />
+        )}
         {photos.length > 1 ? (
           <>
             <button
@@ -55,7 +81,7 @@ export function PhotoCarousel({ name, photos }: PhotoCarouselProps) {
         <div className="carousel-dots" role="tablist" aria-label="Photos">
           {photos.map((photo, photoIndex) => (
             <button
-              key={photo}
+              key={`${photo}-${photoIndex}`}
               type="button"
               className={photoIndex === index ? "dot active" : "dot"}
               onClick={() => setIndex(photoIndex)}

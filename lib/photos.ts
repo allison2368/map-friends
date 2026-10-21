@@ -14,7 +14,7 @@ export function normalizePhotoUrl(raw: string): string {
 
   const driveId = extractDriveId(value);
   if (driveId) {
-    return `https://lh3.googleusercontent.com/d/${driveId}=w1200`;
+    return `/api/photo?id=${driveId}`;
   }
 
   return value;

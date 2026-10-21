@@ -18,8 +18,6 @@ const US_BOUNDS: L.LatLngBoundsExpression = [
   [49.4, -66.8],
 ];
 
-const PIN_COLORS = ["#c45c26", "#2f5d50", "#7a3e48", "#3d6ea8", "#8a6a2f"];
-
 function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -28,31 +26,30 @@ function escapeHtml(value: string) {
     .replaceAll('"', "&quot;");
 }
 
-function offsetOverlapping(friends: Friend[]): Friend[] {
-  const groups = new Map<string, Friend[]>();
+type PlaceGroup = {
+  key: string;
+  lat: number;
+  lng: number;
+  friends: Friend[];
+};
+
+function groupByPlace(friends: Friend[]): PlaceGroup[] {
+  const groups = new Map<string, PlaceGroup>();
   for (const friend of friends) {
     const key = `${friend.lat.toFixed(3)},${friend.lng.toFixed(3)}`;
-    const list = groups.get(key) ?? [];
-    list.push(friend);
-    groups.set(key, list);
-  }
-
-  const placed: Friend[] = [];
-  for (const group of groups.values()) {
-    if (group.length === 1) {
-      placed.push(group[0]);
+    const existing = groups.get(key);
+    if (existing) {
+      existing.friends.push(friend);
       continue;
     }
-    group.forEach((friend, index) => {
-      const angle = (index / group.length) * Math.PI * 2;
-      placed.push({
-        ...friend,
-        lat: friend.lat + Math.sin(angle) * 0.18,
-        lng: friend.lng + Math.cos(angle) * 0.22,
-      });
+    groups.set(key, {
+      key,
+      lat: friend.lat,
+      lng: friend.lng,
+      friends: [friend],
     });
   }
-  return placed;
+  return [...groups.values()];
 }
 
 function FitUnitedStates() {
@@ -63,29 +60,84 @@ function FitUnitedStates() {
   return null;
 }
 
+const TREES = ["🌲", "🌳", "🌴"];
+
+function hashString(seed: string): number {
+  let hash = 0;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
+  }
+  return hash;
+}
+
+function treeFor(seed: string): string {
+  return TREES[hashString(seed) % TREES.length];
+}
+
+function cityAnchor(group: PlaceGroup): { lat: number; lng: number } {
+  const inSanFrancisco =
+    Math.abs(group.lat - 37.788) < 0.04 && Math.abs(group.lng + 122.408) < 0.04;
+  if (inSanFrancisco) {
+    return { lat: 37.759, lng: -122.438 };
+  }
+  return { lat: group.lat, lng: group.lng };
+}
+
+function scatterAroundCity(group: PlaceGroup): Array<{ friend: Friend; lat: number; lng: number }> {
+  if (group.friends.length === 1) {
+    return [{ friend: group.friends[0], lat: group.lat, lng: group.lng }];
+  }
+
+  const anchor = cityAnchor(group);
+  const inSanFrancisco =
+    Math.abs(group.lat - 37.788) < 0.04 && Math.abs(group.lng + 122.408) < 0.04;
+  const chord = inSanFrancisco ? 0.033 : 0.014;
+  const latStretch = inSanFrancisco ? 1.45 : 1;
+  const radius = chord / (2 * Math.sin(Math.PI / group.friends.length));
+  const rotation = (hashString(group.key) / 0xffffffff) * Math.PI * 2;
+  const lngScale = Math.cos((anchor.lat * Math.PI) / 180) || 1;
+
+  return group.friends.map((friend, index) => {
+    const spin = (hashString(friend.id) % 1000) / 1000;
+    const angle = rotation + (index / group.friends.length) * Math.PI * 2 + (spin - 0.5) * 0.25;
+    const distance = radius * (0.9 + spin * 0.12);
+    return {
+      friend,
+      lat: anchor.lat + distance * Math.cos(angle) * latStretch,
+      lng: anchor.lng + (distance * Math.sin(angle)) / lngScale,
+    };
+  });
+}
+
+function treeHtml(seed: string): string {
+  return `<span class="pin-tree" aria-hidden="true">${treeFor(seed)}</span>`;
+}
+
 function FriendPin({
   friend,
-  color,
+  lat,
+  lng,
   onSelect,
 }: {
   friend: Friend;
-  color: string;
+  lat: number;
+  lng: number;
   onSelect: (friend: Friend) => void;
 }) {
   const icon = useMemo(
     () =>
       L.divIcon({
         className: "friend-pin",
-        html: `<span class="pin-hit"><span class="pin-dot" style="background:${color}"></span><span class="pin-name">${escapeHtml(friend.name)}</span></span>`,
-        iconSize: [160, 58],
-        iconAnchor: [80, 58],
+        html: `<span class="pin-hit">${treeHtml(friend.id)}<span class="pin-name">${escapeHtml(friend.name)}</span></span>`,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11],
       }),
-    [color, friend.name],
+    [friend.id, friend.name],
   );
 
   return (
     <Marker
-      position={[friend.lat, friend.lng]}
+      position={[lat, lng]}
       icon={icon}
       title={friend.name}
       alt={friend.name}
@@ -100,7 +152,7 @@ export function FriendsMap() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [formUrl, setFormUrl] = useState<string | null>(null);
   const [selected, setSelected] = useState<Friend | null>(null);
-  const [status, setStatus] = useState("Loading friends…");
+  const places = useMemo(() => groupByPlace(friends), [friends]);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,17 +161,10 @@ export function FriendsMap() {
       .then((response) => response.json() as Promise<FriendsResponse>)
       .then((data) => {
         if (cancelled) return;
-        setFriends(offsetOverlapping(data.friends));
+        setFriends(data.friends);
         setFormUrl(data.formUrl);
-        setStatus(
-          data.source === "sample"
-            ? "Showing sample friends until a Google Form sheet is connected."
-            : `${data.friends.length} friends from the form.`,
-        );
       })
-      .catch(() => {
-        if (!cancelled) setStatus("Could not load friends.");
-      });
+      .catch(() => undefined);
 
     return () => {
       cancelled = true;
@@ -152,23 +197,25 @@ export function FriendsMap() {
         />
         <ZoomControl position="bottomright" />
         <FitUnitedStates />
-        {friends.map((friend, index) => (
-          <FriendPin
-            key={friend.id}
-            friend={friend}
-            color={PIN_COLORS[index % PIN_COLORS.length]}
-            onSelect={setSelected}
-          />
-        ))}
+        {places.flatMap((place) =>
+          scatterAroundCity(place).map(({ friend, lat, lng }) => (
+            <FriendPin
+              key={friend.id}
+              friend={friend}
+              lat={lat}
+              lng={lng}
+              onSelect={setSelected}
+            />
+          )),
+        )}
       </MapContainer>
       <div className="map-wash" aria-hidden="true" />
       <header className="title-overlay">
-        <h1>title</h1>
+        <h1>forest!</h1>
       </header>
-      <p className="map-status">{status}</p>
       {formUrl ? (
         <a className="form-link" href={formUrl} target="_blank" rel="noreferrer">
-          Add yourself
+          google form
         </a>
       ) : null}
       {selected ? (

@@ -47,7 +47,7 @@ function usablePlace(value: string): boolean {
 
 function locationCandidates(raw: string): string[] {
   const stripped = raw
-    .replace(/[!:;)]+/g, " ")
+    .replace(/[()!:;]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
   const candidates: string[] = [];
@@ -62,7 +62,31 @@ function locationCandidates(raw: string): string[] {
   const inMatch = stripped.match(/\bin\s+([A-Za-z][A-Za-z .]{1,40})$/i);
   if (inMatch?.[1]) candidates.push(inMatch[1].trim());
   candidates.push(stripped);
-  return [...new Set(candidates.filter(usablePlace))];
+  const unique = [...new Set(candidates.filter(usablePlace))];
+  if (/san francisco/i.test(stripped)) {
+    return [
+      "San Francisco",
+      ...unique.filter((item) => item.toLowerCase() !== "san francisco"),
+    ];
+  }
+  return unique;
+}
+
+function formatName(value: string): string {
+  return value
+    .trim()
+    .split(/\s+/)
+    .map((part) =>
+      part
+        .split("-")
+        .map((piece) =>
+          piece
+            ? piece.charAt(0).toUpperCase() + piece.slice(1).toLowerCase()
+            : piece,
+        )
+        .join("-"),
+    )
+    .join(" ");
 }
 
 function slugify(value: string): string {
@@ -98,7 +122,8 @@ export async function friendsFromCsv(csv: string): Promise<Friend[]> {
       get((h) => isNameHeader(h) && h !== "first name" && h !== "firstname" && h !== "last name" && h !== "lastname") ||
       [firstName, lastName].filter(Boolean).join(" ");
 
-    if (!fullName) continue;
+    const name = formatName(fullName);
+    if (!name) continue;
 
     const location = get(
       (h) =>
@@ -137,7 +162,7 @@ export async function friendsFromCsv(csv: string): Promise<Friend[]> {
     const photos = headers.flatMap((header, index) => {
       if (!isPhotoHeader(header)) return [];
       return splitPhotoCell(cells[index] ?? "").filter((url) =>
-        /^https?:\/\//i.test(url),
+        /^https?:\/\//i.test(url) || url.startsWith("/api/photo?"),
       );
     });
 
@@ -174,8 +199,8 @@ export async function friendsFromCsv(csv: string): Promise<Friend[]> {
     });
 
     friends.push({
-      id: `${slugify(fullName) || "friend"}-${i}`,
-      name: fullName,
+      id: `${slugify(name) || "friend"}-${i}`,
+      name,
       location: location || "United States",
       lat,
       lng,
