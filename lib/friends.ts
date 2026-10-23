@@ -1,5 +1,6 @@
 import sampleFriends from "@/data/sample-friends.json";
 import { applyDrivePhotos, listDriveFolder } from "./drive";
+import { siteEnv } from "./site-env";
 import { friendsFromCsv } from "./sheet";
 import type { Friend, FriendsResponse } from "./types";
 
@@ -8,8 +9,11 @@ function asFriends(value: unknown): Friend[] {
 }
 
 export async function loadFriends(): Promise<FriendsResponse> {
-  const sheetUrl = process.env.GOOGLE_SHEETS_CSV_URL;
-  const formUrl = process.env.GOOGLE_FORM_URL ?? process.env.NEXT_PUBLIC_GOOGLE_FORM_URL ?? null;
+  const sheetUrl = process.env.GOOGLE_SHEETS_CSV_URL || siteEnv.sheetUrl;
+  const formUrl =
+    process.env.GOOGLE_FORM_URL ||
+    process.env.NEXT_PUBLIC_GOOGLE_FORM_URL ||
+    siteEnv.formUrl;
 
   if (sheetUrl) {
     try {
@@ -17,7 +21,7 @@ export async function loadFriends(): Promise<FriendsResponse> {
       if (response.ok) {
         const csv = await response.text();
         let friends = await friendsFromCsv(csv);
-        const folderUrl = process.env.GOOGLE_DRIVE_FOLDER_URL;
+        const folderUrl = process.env.GOOGLE_DRIVE_FOLDER_URL || siteEnv.driveFolderUrl;
         if (folderUrl) {
           try {
             const files = await listDriveFolder(folderUrl);
