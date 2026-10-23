@@ -69,6 +69,12 @@ function locationCandidates(raw: string): string[] {
       ...unique.filter((item) => item.toLowerCase() !== "san francisco"),
     ];
   }
+  if (/\bdavis\b/i.test(stripped)) {
+    return [
+      "Davis, California",
+      ...unique.filter((item) => item.toLowerCase() !== "davis, california"),
+    ];
+  }
   return unique;
 }
 

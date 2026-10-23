@@ -87,6 +87,8 @@ const FIRST_PHOTO: Record<string, string> = {
   "michelle kong": "1lULqWXW2shnUwWWo6HMn94EYf3ReIfnd",
   "nich wang": "1Bu8hCYdFC0v0j4t1JRDb1wHHjUzQ43KW",
   "samuel li": "1UzSphXYYl7NNZIYSUUorcnFWpeT1aj6x",
+  "justin wu": "1ZNY_vzNVkpbzAKfxfySZSV29bm0CXefO",
+  "sunhee choi": "1B5hHowfO6mgFErAOrKmdS5VslwyC2dXh",
   "theo pan": "1BCGRVR12jauQ4jyJZkwpaopyqVBgZLxr",
   "tosca wong": "1RCIS77LCNVziNO0f0DdsyxfELmx7aqdC",
   "wesley han": "1FkiMqIMmKlEvlBiANB76tgsTqdukc9tx",
